@@ -2,6 +2,63 @@ import PageTitle from "../components/PageTitle"
 import Link from "next/link"
 import styled from 'styled-components'
 import Head from "next/head"
+import { useState } from "react"
+import axios from "axios"
+
+export default function AddPost() {
+    const [title, setTitle] = useState('')
+    const [text, setText] = useState('')
+    const [imgUrl, setImgUrl] = useState('')
+    
+    const addPost = async () => {
+        const textPreview = text.substr(0,20) + '...'
+
+        try {
+            await axios.post('http://localhost:5000/api/post/add', {
+                title, text, imgUrl, textPreview
+            })
+            .then(() => {
+                setTitle('')
+                setText('')
+                setImgUrl('')
+            })
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    return (
+        <>
+            <Head>
+                <title>Add Post</title>
+            </Head>
+
+            <PageTitle>Add Post</PageTitle>
+            
+            <section>
+                <div className="container">
+                    <FormWrapper>
+                        <Form onSubmit={event => event.preventDefault()}>
+                            <InputField>
+                                <Label>Post Title:</Label>
+                                <Input value={title} onChange={event => setTitle(event.target.value)} />
+                            </InputField>
+                            <InputField>
+                                <Label>Post Text:</Label>
+                                <Textarea value={text} onChange={event => setText(event.target.value)} />
+                            </InputField>
+                            <InputField>
+                                <Label>Image URL:</Label>
+                                <Input value={imgUrl} onChange={event => setImgUrl(event.target.value)} />
+                            </InputField>
+                            <button onClick={addPost} className="btn btn-primary w-100">Submit</button>
+                        </Form>
+                    </FormWrapper>
+                </div>
+            </section>
+        </>
+    )
+}
 
 const FormWrapper = styled.div`
     display: flex;
@@ -42,38 +99,3 @@ const Label = styled.label`
     line-height: 1.2em;
     margin-bottom: 5px;
 `
-
-
-export default function AddPost() {
-    return (
-        <>
-            <Head>
-                <title>Add Post</title>
-            </Head>
-
-            <PageTitle>Add Post</PageTitle>
-            
-            <section>
-                <div className="container">
-                    <FormWrapper>
-                        <Form>
-                            <InputField>
-                                <Label>Post Title:</Label>
-                                <Input />
-                            </InputField>
-                            <InputField>
-                                <Label>Post Text:</Label>
-                                <Textarea />
-                            </InputField>
-                            <InputField>
-                                <Label>Image URL:</Label>
-                                <Input />
-                            </InputField>
-                            <button className="btn btn-primary w-100">Submit</button>
-                        </Form>
-                    </FormWrapper>
-                </div>
-            </section>
-        </>
-    )
-}
